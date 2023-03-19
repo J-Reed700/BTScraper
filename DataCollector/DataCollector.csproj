@@ -9,9 +9,13 @@
   <ItemGroup>
     <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2" />
     <PackageReference Include="Catalyst" Version="1.0.35051" />
+    <PackageReference Include="FlareSolverrSharp" Version="3.0.4" />
     <PackageReference Include="IronPython.StdLib" Version="3.4.0" />
     <PackageReference Include="IronWebScraper" Version="2023.2.2" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.31.1" />
     <PackageReference Include="OpenNLP.NET" Version="1.9.4.1" />
+    <PackageReference Include="PuppeteerExtraSharp" Version="2.0.0" />
+    <PackageReference Include="ScraperApi" Version="1.0.5" />
     <PackageReference Include="Selenium.WebDriver.UndetectedChromeDriver" Version="2.3.0" />
   </ItemGroup>
 

@@ -4,4 +4,4 @@ using DataCollector;
 using DataCollector.Extractor;
 
 var ext = new Extractor();
-ext.Init();
+await ext.Init();

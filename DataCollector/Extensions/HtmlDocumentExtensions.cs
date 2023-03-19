@@ -9,9 +9,11 @@ namespace DataCollector.Extensions
 {
     public static class HtmlDocumentExtensions
     {
-        public static IEnumerable<HtmlNode> Css(this HtmlDocument htmlDocument, string dClass)
+        public static IEnumerable<HtmlNode> Css(this HtmlDocument htmlDocument, string dClass, bool exactMatch = false)
         {
-            return htmlDocument.DocumentNode.Descendants().Where(x => x.Attributes is not null && x.Attributes.Contains("class") && x.Attributes["class"].Value.Contains(dClass));
+            return exactMatch ? htmlDocument.DocumentNode.Descendants().Where(x => x.Attributes is not null && x.Attributes.Contains("class") && String.Equals(x.Attributes["class"].Value,dClass))
+                : htmlDocument.DocumentNode.Descendants().Where(x => x.Attributes is not null && x.Attributes.Contains("class") && x.Attributes["class"].Value.Contains(dClass));
         }
+
     }
 }

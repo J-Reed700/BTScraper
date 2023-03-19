@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Catalyst;
 using Mosaik.Core;
 using HtmlAgilityPack;
+using DataCollector.Extensions;
 
 namespace DataCollector
 {
@@ -13,18 +14,28 @@ namespace DataCollector
     {
 
         private string _header = "";
+        private string _headerText = "";
         
         public void SetHeader(string header)
         {
             _header = header;
         }
 
-        public void ProcessBody(HtmlNode body)
+        public async Task<bool> ProcessBody(HtmlNode body)
         {
             if(!(body is null))
             {
-
+                var mainBody = body.Css("lt-article__body");
+                foreach(var vbody in mainBody)
+                {
+                    foreach(var node in vbody.ChildNodes)
+                    {
+                        if(String.IsNullOrEmpty(node.InnerText.Trim())) { continue; }
+                        if(String.IsNullOrEmpty(_headerText)) { _headerText = node.InnerText.Trim(); }`
+                    }
+                }
             }
+            return false;
         }
 
         public void test()
