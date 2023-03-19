@@ -28,31 +28,7 @@ namespace DataCollector.Extractor
 
         public async Task<bool> Init()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            var webRequest = new HttpClient();//
-            webRequest.DefaultRequestHeaders.Accept.Clear();
-            webRequest.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            webRequest.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
-            webRequest.DefaultRequestHeaders.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-            webRequest.DefaultRequestHeaders.Add("accept-encoding", "gzip, deflate, br");
-            webRequest.DefaultRequestHeaders.Add("origin", "34.194.114.206");
-            /*webRequest.DefaultRequestHeaders.Add("accept-language", "en-US,en-CA;q=0.9,en;q=0.8,fr-CA;q=0.7,fr;q=0.6");
-            webRequest.DefaultRequestHeaders.Add("cache-control", "max-age=0");
-            webRequest.DefaultRequestHeaders.Add("sec-ch-ua-mobile", "?0");
-            webRequest.DefaultRequestHeaders.Add("sec-fetch-dest", "document");
-            webRequest.DefaultRequestHeaders.Add("sec-fetch-mode", "navigate");
-            webRequest.DefaultRequestHeaders.Add("sec-fetch-site", "none");
-            webRequest.DefaultRequestHeaders.Add("sec-fetch-user", "?1");
-            webRequest.DefaultRequestHeaders.Add("upgrade-insecure-requests", "1");*/
-
-            /*PlayWright
-
-            using var playwright = Playwright.CreateAsync().GetAwaiter().GetResult();
-            var browser = playwright.Chromium.LaunchAsync(new() { Headless = true }).GetAwaiter().GetResult();
-            var page = browser.NewPageAsync().GetAwaiter().GetResult();
-            page.GotoAsync("https://playwright.dev/dotnet");
-            */
-            /* Pupeteer */
+            
 
             var extra = new PuppeteerExtra();
 
@@ -86,7 +62,7 @@ namespace DataCollector.Extractor
              Doc = new HtmlDocument();
              Doc.LoadHtml(content);
              await Parse(Doc);
-            
+            _filter.EvaluateSections();
             return true;
         }
 
@@ -146,6 +122,8 @@ namespace DataCollector.Extractor
         public async Task<bool> ParseArticle(HtmlDocument response)
         {
             var x = 0;
+            var header = response.Css("lt-article__title").FirstOrDefault();
+            if (header is not null) { _filter.SetHeader(header?.InnerText.Trim()); }
             var values = response.Css("lt-article-container");
             foreach (HtmlNode title_link in values)
             {
@@ -156,14 +134,8 @@ namespace DataCollector.Extractor
 
         public async Task<bool> ProcessElements(HtmlNode primaryNode)
         {
-            //First grab header
-            //var header = primaryNode.Css("lt-article__title").FirstOrDefault();
-            //if(header is null) { return false; }
-            //_filter.SetHeader(header?.InnerText);
-            //HtmlNode body = primaryNode.Css(".lt-article__body").FirstOrDefault();
-            //;
             var header = primaryNode.Css("lt-article__title").FirstOrDefault();
-            if (header is null) { return false; }
+            if (header is null && String.IsNullOrEmpty(_filter.GetHeader())) { return false; }
             _filter.SetHeader(header?.InnerText.Trim());
             return await _filter.ProcessBody(primaryNode);
 

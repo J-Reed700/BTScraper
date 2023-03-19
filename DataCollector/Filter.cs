@@ -13,11 +13,31 @@ namespace DataCollector
     public class Filter
     {
 
+        private string _firstHeader = null;
         private string _header = "";
         private string _headerText = "";
+        private string followingDesc = "";
+        private Dictionary<string, string> _headerContent;
+        private List<Tuple<string, string, string, int>> HeaderContents;
+        private Dictionary<string, int> TextShown; 
+        public Filter()
+        {
+            _headerContent= new Dictionary<string, string>();
+            HeaderContents = new List<Tuple<string, string, string, int>>();
+            TextShown = new Dictionary<string, int>();
+        }
         
+        public string GetHeader()
+        {
+            return _header;
+        }
+
         public void SetHeader(string header)
         {
+            if(_firstHeader is null)
+            {
+                _firstHeader = header;
+            }
             _header = header;
         }
 
@@ -25,16 +45,45 @@ namespace DataCollector
         {
             if(!(body is null))
             {
+
+                followingDesc = _header;
+                
+                if(_headerContent.Count() == 0)
+                {
+                    _headerContent[followingDesc] = "";
+                }
                 var mainBody = body.Css("lt-article__body");
                 foreach(var vbody in mainBody)
                 {
-                    foreach(var node in vbody.ChildNodes)
+                    foreach(var node in vbody.Descendants())
                     {
-                        if(String.IsNullOrEmpty(node.InnerText.Trim())) { continue; }
-                        if(String.IsNullOrEmpty(_headerText)) { _headerText = node.InnerText.Trim(); }`
+                        if(String.IsNullOrEmpty(node.InnerText.Trim()) || ShouldIgnoreString(node.InnerText)) { continue; }
+                        if(!ShouldIgnoreString(node.InnerText) && String.IsNullOrEmpty(_headerText) && IsHeader(node.EndNode.Name)) 
+                        {
+                            _headerText = node.InnerText.Trim(); 
+                        }
+                        if(node.EndNode.Name == "h2" || node.EndNode.Name == "h3") 
+                        {
+                            followingDesc = node.InnerText.Trim();
+                            _headerContent[node.InnerText.Trim()] = "";
+                        }
+                        if(node.EndNode.Name == "p" && !TextShown.ContainsKey(node.InnerText.Trim()))                        
+                        {
+                            if (_headerContent.ContainsKey(followingDesc) && !String.IsNullOrEmpty(_headerContent[followingDesc]))
+                            {
+                                _headerContent[followingDesc] += " " + node.InnerText.Trim();
+                            }
+                            else
+                            {
+                                _headerContent[followingDesc] = node.InnerText.Trim();
+                            }
+                            TextShown[node.InnerText.Trim()] = TextShown.ContainsKey(node.InnerText.Trim()) ? TextShown[node.InnerText.Trim()] + 1 : 1;
+                        }
                     }
                 }
             }
+            _header = String.Empty;
+            _headerText= String.Empty;
             return false;
         }
 
@@ -101,14 +150,14 @@ namespace DataCollector
         // 
         //     Extract the sections of a Wikipedia page, discarding the references and other low information sections
         //     
-        public List<Tuple<string,string,string,int>> extract_sections(Dictionary<string,string> headerContent, string title, int max_len = 1500, object discard_categories = null)
+        public void extract_sections(Dictionary<string,string> headerContent, string title, int max_len = 1500, object discard_categories = null)
         {
             if (headerContent.Count() == 0)
             {
-                return new List<Tuple<string, string, string, int>>();
+                return;
             }
             Debug.Assert(headerContent.Keys.Count == headerContent.Values.Count() );
-            var cont = headerContent[_header].Trim();
+            var cont = headerContent[_firstHeader].Trim();
             var outputs = new List<Tuple<string, string, string, int>> {
                 Tuple.Create(title, _header, cont, count_tokens(cont) + 4)
             };
@@ -154,7 +203,40 @@ namespace DataCollector
                         let c = _tup_3.Item2
                         let t = _tup_3.Item3
                         select t < max_len ? Tuple.Create(title, h, c, t) :Tuple.Create(title, h, reduce_long(c, max_len: max_len), count_tokens(reduce_long(c, max_len: max_len))));
-            return outputs;
+            HeaderContents.AddRange(outputs);
+        }
+
+        public bool ShouldIgnoreString(string str)
+        {
+            switch (str.Trim()) {
+                case null: 
+                    return true;
+                case "":
+                    return true;
+                case "&nbsp;":
+                    return true;
+                default:
+                    return false;
+            }
+            
+        }
+
+        public bool IsHeader(string str)
+        {
+            switch(str)
+            {
+                case "h":
+                    return true;
+                case "strong":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public void EvaluateSections()
+        {
+            extract_sections(_headerContent, "Sections");
         }
     }
 }
