@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2" />
+    <PackageReference Include="Catalyst" Version="1.0.35051" />
+    <PackageReference Include="IronPython.StdLib" Version="3.4.0" />
+    <PackageReference Include="IronWebScraper" Version="2023.2.2" />
+    <PackageReference Include="OpenNLP.NET" Version="1.9.4.1" />
+    <PackageReference Include="Selenium.WebDriver.UndetectedChromeDriver" Version="2.3.0" />
+  </ItemGroup>
+
+</Project>
