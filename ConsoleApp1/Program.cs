@@ -2,6 +2,10 @@
 
 using DataCollector;
 using DataCollector.Extractor;
+using DataCollector.Extractor.Factorry;
 
-var ext = new Extractor();
-await ext.Init();
+var ext = new ExtractorDirector("https://help.bigtime.net/hc/en-us");
+if(await ext.ExtractAsync())
+{
+    await ext.SaveToFile(@"C:\Users\file.csv");
+}

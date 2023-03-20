@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2" />
     <PackageReference Include="Catalyst" Version="1.0.35051" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="FlareSolverrSharp" Version="3.0.4" />
     <PackageReference Include="IronPython.StdLib" Version="3.4.0" />
     <PackageReference Include="IronWebScraper" Version="2023.2.2" />
@@ -17,6 +18,10 @@
     <PackageReference Include="PuppeteerExtraSharp" Version="2.0.0" />
     <PackageReference Include="ScraperApi" Version="1.0.5" />
     <PackageReference Include="Selenium.WebDriver.UndetectedChromeDriver" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
